@@ -11,6 +11,7 @@
   <meta name="theme-color" content="#0a0a0a">
   
   <!-- Apple iOS specific tags -->
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="apple-touch-icon" href="icon-192.png">
@@ -68,6 +69,10 @@
     .mode-off {
       justify-content: center;
       align-items: center;
+      /* Prevent text selection and long-press context menus */
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
     }
 
     .mode-off::before {
@@ -383,6 +388,7 @@
       text-overflow: ellipsis;
       text-shadow: 0 2px 4px rgba(0,0,0,0.8);
       transition: opacity 0.3s ease;
+      pointer-events: none; /* Prevent text interaction */
     }
 
     .play-btn {
@@ -1105,8 +1111,15 @@
 
   /* ---------------- custom photo themes ---------------- */
   function loadPhotoSettings() {
-    var saved = lsGet(LS_PHOTOS, ['', '', '']);
-    customPhotoIds = Array.isArray(saved) && saved.length === 3 ? saved : ['', '', ''];
+    var defaultIds = [
+      '1kjNMOjni9KyJoYxBbzPh_3zbOdhFluko',
+      '1qeO2p01eRIhMbSMHXw5MiMTpSmg95gm7',
+      '1ylSC2FgRqOVYAdvZ1TgAN-PfWzpiN_EL'
+    ];
+    
+    var saved = lsGet(LS_PHOTOS, defaultIds);
+    // If it's the first time loading (or invalid), use defaults
+    customPhotoIds = (Array.isArray(saved) && saved.length === 3 && saved.some(id => id)) ? saved : defaultIds;
     
     photoId1.value = customPhotoIds[0];
     photoId2.value = customPhotoIds[1];
