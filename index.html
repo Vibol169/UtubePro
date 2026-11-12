@@ -395,22 +395,30 @@
       margin-top: 10px;
     }
 
+    /* FIXED: Play button now matches the glass style of skip buttons */
     .play-btn {
-      width: 100px; height: 100px; /* Reduced to balance the row */
+      width: 80px; height: 80px;
       border-radius: 50%;
-      border: none;
+      border: 1px solid var(--ring);
       color: #fff;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(135deg, var(--acc1), var(--acc2));
-      box-shadow: 0 0 50px var(--glow), inset 0 0 20px rgba(255,255,255,0.15);
-      transition: 0.3s ease;
+      background: rgba(20, 15, 40, 0.4); /* Dark glass background */
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      transition: 0.25s ease;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
-    .play-btn:hover { box-shadow: 0 0 70px var(--glow), inset 0 0 20px rgba(255,255,255,0.2); }
-    .play-btn:active { transform: scale(0.92); }
-    .play-btn svg { margin-left: 4px; }
+    .play-btn:hover {
+      background: rgba(40, 30, 70, 0.6);
+      transform: translateY(-2px);
+      border-color: var(--acc1);
+      box-shadow: 0 4px 20px var(--glow);
+    }
+    .play-btn:active { transform: scale(0.9); }
+    .play-btn svg { margin-left: 4px; width: 32px; height: 32px; }
 
     .skip-btn {
       width: 54px; height: 54px;
@@ -610,7 +618,8 @@
        RESPONSIVE
        ============================================================ */
     @media (max-width: 380px) {
-      .play-btn   { width: 90px; height: 90px; }
+      .play-btn   { width: 70px; height: 70px; }
+      .play-btn svg { width: 28px; height: 28px; }
       .skip-btn   { width: 46px; height: 46px; }
       .skip-btn svg { width: 20px; height: 20px; }
       .controls-row { gap: 16px; }
@@ -693,14 +702,13 @@
       <div class="galaxy-main">
         <div id="songTitle">Waiting for song</div>
         
-        <!-- NEW MODERN CONTROLS ROW -->
         <div class="controls-row">
           <button class="skip-btn" id="prevBtn" type="button" title="Previous">
             <svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
           </button>
           
           <button class="play-btn" id="playBtn" type="button">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="white" id="playIcon">
+            <svg viewBox="0 0 24 24" fill="white" id="playIcon">
               <path d="M8 5v14l11-7z"/>
             </svg>
           </button>
@@ -766,7 +774,7 @@
   var THEMES = ['galaxy', 'aurora', 'ember', 'photo-1', 'photo-2', 'photo-3'];
 
   /* ---------------- Worker Config ---------------- */
-  var WORKER_URL = "https://tight-mouse-a2d5.ppap-tec-2022.workers.dev/"; 
+  var WORKER_URL = "https://YOUR_WORKER_SUBDOMAIN.workers.dev"; 
   var HAS_SERVER = (WORKER_URL && !WORKER_URL.includes("YOUR_WORKER_SUBDOMAIN"));
 
   /* ---------------- state ---------------- */
@@ -784,11 +792,9 @@
   
   var customPhotoIds = ['', '', ''];
   
-  // Auto-Hide state
   var idleTimer = null;
   var isIdle = false;
 
-  // Lock Screen State
   var enteredPin = '';
   var correctPin = '1234';
 
@@ -1258,19 +1264,23 @@
   function playNext() {
     if (!historyCache.length) return;
     var idx = findHistoryIndex(currentVideoId);
-    if (idx === -1) idx = 0; // If current video not in history, start from top
-    var nextIdx = (idx + 1) % historyCache.length; // Loop back to start
-    setScreen(true);
-    createPlayer(historyCache[nextIdx].id, 0, true);
+    if (idx === -1) idx = 0;
+    var nextIdx = (idx + 1) % historyCache.length;
+    
+    withPlayerApi(function () { 
+      createPlayer(historyCache[nextIdx].id, 0, true); 
+    });
   }
 
   function playPrev() {
     if (!historyCache.length) return;
     var idx = findHistoryIndex(currentVideoId);
     if (idx === -1) idx = 0;
-    var prevIdx = (idx - 1 + historyCache.length) % historyCache.length; // Loop to end
-    setScreen(true);
-    createPlayer(historyCache[prevIdx].id, 0, true);
+    var prevIdx = (idx - 1 + historyCache.length) % historyCache.length; 
+    
+    withPlayerApi(function () { 
+      createPlayer(historyCache[prevIdx].id, 0, true); 
+    });
   }
 
   function refreshAgoLabels() {
@@ -1353,10 +1363,9 @@
           } else if (e.data === YT.PlayerState.ENDED) {
             isPlaying = false;
             playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
-            // AUTO PLAY NEXT
             setTimeout(function() {
               playNext();
-            }, 800); // Slight delay for smooth transition
+            }, 800); 
           } else {
             refreshTitle();
           }
