@@ -14,7 +14,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <link rel="icon" type="image/png" href="icon-192.png">
+  <link rel="apple-touch-icon" href="icon-192.png">
   
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; }
@@ -69,7 +69,6 @@
     .mode-off {
       justify-content: center;
       align-items: center;
-      /* Prevent text selection and long-press context menus */
       user-select: none;
       -webkit-user-select: none;
       -webkit-touch-callout: none;
@@ -172,9 +171,7 @@
       margin-bottom: 8px;
       animation: slideDown 0.3s ease;
     }
-    .hidden-search {
-      display: none !important;
-    }
+    .hidden-search { display: none !important; }
     @keyframes slideDown {
       from { opacity: 0; transform: translateY(-10px); }
       to { opacity: 1; transform: translateY(0); }
@@ -211,7 +208,6 @@
     #searchBtn { background: #ff4444; }
     #loadBtn   { background: #723ed8; }
 
-    /* Perfect Grid Layout for Mobile Toolbar */
     .toolbar { 
       display: grid; 
       grid-template-columns: repeat(2, 1fr); 
@@ -243,10 +239,7 @@
       border-radius: 10px; background: rgba(255,255,255,.16); font-size: 12px; text-align: center;
     }
 
-    /* Hidden buttons logic */
-    .hidden-btn {
-      display: none !important;
-    }
+    .hidden-btn { display: none !important; }
 
     /* --- Settings Panel --- */
     .settings-panel {
@@ -388,14 +381,24 @@
       text-overflow: ellipsis;
       text-shadow: 0 2px 4px rgba(0,0,0,0.8);
       transition: opacity 0.3s ease;
-      pointer-events: none; /* Prevent text interaction */
+      pointer-events: none;
+    }
+
+    /* ============================================================
+       MODERN MEDIA CONTROLS
+       ============================================================ */
+    .controls-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      margin-top: 10px;
     }
 
     .play-btn {
-      width: 120px; height: 120px;
+      width: 100px; height: 100px; /* Reduced to balance the row */
       border-radius: 50%;
       border: none;
-      font-size: 42px;
       color: #fff;
       cursor: pointer;
       display: flex;
@@ -407,7 +410,31 @@
     }
     .play-btn:hover { box-shadow: 0 0 70px var(--glow), inset 0 0 20px rgba(255,255,255,0.2); }
     .play-btn:active { transform: scale(0.92); }
-    .play-btn svg { margin-left: 6px; }
+    .play-btn svg { margin-left: 4px; }
+
+    .skip-btn {
+      width: 54px; height: 54px;
+      border-radius: 50%;
+      border: 1px solid var(--ring);
+      background: rgba(20, 15, 40, 0.4);
+      color: var(--text-soft);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: 0.25s ease;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+    .skip-btn svg { width: 24px; height: 24px; fill: currentColor; }
+    .skip-btn:hover {
+      background: rgba(40, 30, 70, 0.6);
+      color: #fff;
+      transform: translateY(-2px);
+      border-color: var(--acc1);
+      box-shadow: 0 4px 15px var(--glow);
+    }
+    .skip-btn:active { transform: scale(0.9); }
 
     .galaxy-row {
       display: flex;
@@ -444,6 +471,7 @@
        LOCKED STATE (SCREEN-OFF)
        ============================================================ */
     .mode-off.is-locked .play-btn,
+    .mode-off.is-locked .skip-btn,
     .mode-off.is-locked .theme-dots,
     .mode-off.is-locked #gHistoryBtn,
     .mode-off.is-locked #gSaveBtn,
@@ -479,39 +507,20 @@
       opacity: 0;
       transition: opacity 0.3s ease;
     }
-    .lock-overlay.show {
-      display: flex;
-      opacity: 1;
-    }
+    .lock-overlay.show { display: flex; opacity: 1; }
 
     .lock-icon-large {
-      font-size: 40px;
-      color: rgba(255, 255, 255, 0.2);
-      margin-bottom: 20px;
+      font-size: 40px; color: rgba(255, 255, 255, 0.2); margin-bottom: 20px;
     }
-
-    .pin-display {
-      display: flex;
-      gap: 16px;
-      margin-bottom: 40px;
-    }
+    .pin-display { display: flex; gap: 16px; margin-bottom: 40px; }
     .pin-dot {
-      width: 14px; height: 14px;
-      border-radius: 50%;
-      border: 2px solid rgba(255, 255, 255, 0.4);
-      transition: all 0.2s ease;
+      width: 14px; height: 14px; border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.4); transition: all 0.2s ease;
     }
-    .pin-dot.filled {
-      background: #fff;
-      border-color: #fff;
-      box-shadow: 0 0 10px rgba(255,255,255,0.5);
-    }
+    .pin-dot.filled { background: #fff; border-color: #fff; box-shadow: 0 0 10px rgba(255,255,255,0.5); }
     .pin-dot.error {
-      border-color: #ff4444;
-      background: #ff4444;
-      animation: shake 0.4s ease;
+      border-color: #ff4444; background: #ff4444; animation: shake 0.4s ease;
     }
-
     @keyframes shake {
       0%, 100% { transform: translateX(0); }
       25% { transform: translateX(-6px); }
@@ -519,27 +528,16 @@
     }
 
     .keypad {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-      max-width: 280px;
-      width: 100%;
-      padding: 0 20px;
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 20px; max-width: 280px; width: 100%; padding: 0 20px;
     }
     .key-btn {
-      width: 70px; height: 70px;
-      border-radius: 50%;
+      width: 70px; height: 70px; border-radius: 50%;
       border: 1px solid rgba(255, 255, 255, 0.15);
-      background: rgba(255, 255, 255, 0.05);
-      color: #fff;
-      font-size: 24px;
-      font-weight: 300;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: 0.2s ease;
-      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.05); color: #fff;
+      font-size: 24px; font-weight: 300; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: 0.2s ease; margin: 0 auto;
     }
     .key-btn:hover { background: rgba(255, 255, 255, 0.15); }
     .key-btn:active { background: rgba(255, 255, 255, 0.3); transform: scale(0.9); }
@@ -550,28 +548,17 @@
        HISTORY PANEL
        ============================================================ */
     .history-panel {
-      display: none;
-      margin-top: 12px;
-      border-radius: 12px;
-      background: rgba(20,10,50,.6);
-      border: 1px solid #8862dd44;
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
+      display: none; margin-top: 12px; border-radius: 12px;
+      background: rgba(20,10,50,.6); border: 1px solid #8862dd44;
+      backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
       overflow: hidden;
     }
     .history-panel.open { display: block; }
 
     .mode-off .history-panel {
-      position: fixed;
-      bottom: 24px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: calc(100% - 32px);
-      max-width: 440px;
-      max-height: 55vh;
-      z-index: 50;
-      margin-top: 0;
-      background: rgba(15, 10, 30, 0.95);
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+      width: calc(100% - 32px); max-width: 440px; max-height: 55vh;
+      z-index: 50; margin-top: 0; background: rgba(15, 10, 30, 0.95);
       border-color: var(--ring);
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 20px var(--glow);
       animation: slideUp 0.3s ease;
@@ -623,7 +610,10 @@
        RESPONSIVE
        ============================================================ */
     @media (max-width: 380px) {
-      .play-btn   { width: 110px; height: 110px; font-size: 38px; }
+      .play-btn   { width: 90px; height: 90px; }
+      .skip-btn   { width: 46px; height: 46px; }
+      .skip-btn svg { width: 20px; height: 20px; }
+      .controls-row { gap: 16px; }
       .g-icon-btn { width: 40px;  height: 40px;  font-size: 16px; }
       .galaxy-row { gap: 12px; }
       #songTitle  { font-size: 14px; }
@@ -638,8 +628,6 @@
 
   <div class="container">
     <!-- ===== SCREEN-ON UI ===== -->
-    
-    <!-- Hidden by default, toggled by Search button -->
     <div class="input-row hidden-search" id="searchContainer">
       <input id="searchInput" placeholder="Paste YouTube link / ID...">
       <div class="input-actions">
@@ -655,12 +643,10 @@
       <button class="pill-btn" id="toggleSearchBtn" type="button">🔍 Search Video</button>
       <button class="pill-btn" id="toggleMoreBtn" type="button">⚙️ More</button>
 
-      <!-- Hidden by default -->
       <button class="pill-btn hidden-btn" id="saveBtn" type="button">💾 Save Current</button>
       <button class="pill-btn hidden-btn" id="settingsBtn" type="button">📷 Photo Themes</button>
     </div>
 
-    <!-- Settings Panel -->
     <div class="settings-panel" id="settingsPanel">
       <h4>Google Drive Photo Backgrounds (Max 3)</h4>
       <p style="font-size:11px; color:#9186bd; margin-bottom:12px;">Ensure Drive file sharing is set to "Anyone with the link".</p>
@@ -707,11 +693,22 @@
       <div class="galaxy-main">
         <div id="songTitle">Waiting for song</div>
         
-        <button class="play-btn" id="playBtn" type="button">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="white" id="playIcon">
-            <path d="M8 5v14l11-7z"/>
-          </svg>
-        </button>
+        <!-- NEW MODERN CONTROLS ROW -->
+        <div class="controls-row">
+          <button class="skip-btn" id="prevBtn" type="button" title="Previous">
+            <svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+          </button>
+          
+          <button class="play-btn" id="playBtn" type="button">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="white" id="playIcon">
+              <path d="M8 5v14l11-7z"/>
+            </svg>
+          </button>
+          
+          <button class="skip-btn" id="nextBtn" type="button" title="Next">
+            <svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+          </button>
+        </div>
 
         <div class="galaxy-row">
           <button class="g-icon-btn" id="gHistoryBtn" type="button" title="History">🕘</button>
@@ -768,13 +765,8 @@
   var HISTORY_LIMIT = 40;
   var THEMES = ['galaxy', 'aurora', 'ember', 'photo-1', 'photo-2', 'photo-3'];
 
-  /* ============================================================
-     CLOUDFLARE WORKER CONFIGURATION
-     ============================================================ */
-  // PASTE YOUR CLOUDFLARE WORKER URL HERE
+  /* ---------------- Worker Config ---------------- */
   var WORKER_URL = "https://tight-mouse-a2d5.ppap-tec-2022.workers.dev/"; 
-  
-  // Check if we have a valid worker URL to connect to
   var HAS_SERVER = (WORKER_URL && !WORKER_URL.includes("YOUR_WORKER_SUBDOMAIN"));
 
   /* ---------------- state ---------------- */
@@ -825,8 +817,12 @@
   var dismissSavedBtn = document.getElementById('dismissSavedBtn');
   var playerWrap      = document.getElementById('playerWrap');
   var galaxyUI        = document.getElementById('galaxyUI');
+  
   var playBtn         = document.getElementById('playBtn');
   var playIcon        = document.getElementById('playIcon');
+  var prevBtn         = document.getElementById('prevBtn');
+  var nextBtn         = document.getElementById('nextBtn');
+  
   var songTitle       = document.getElementById('songTitle');
   var historyPanel    = document.getElementById('historyPanel');
   var historyList     = document.getElementById('historyList');
@@ -1118,7 +1114,6 @@
     ];
     
     var saved = lsGet(LS_PHOTOS, defaultIds);
-    // If it's the first time loading (or invalid), use defaults
     customPhotoIds = (Array.isArray(saved) && saved.length === 3 && saved.some(id => id)) ? saved : defaultIds;
     
     photoId1.value = customPhotoIds[0];
@@ -1186,7 +1181,9 @@
     toggleBtn.textContent = screenOn ? 'Screen: ON' : 'Screen: OFF ✦ ' + label;
   }
 
-  /* ---------------- history render ---------------- */
+  /* ============================================================
+     HISTORY & NEXT/PREV LOGIC
+     ============================================================ */
   function renderHistory() {
     historyCount.textContent = String(historyCache.length);
     historyList.innerHTML = '';
@@ -1233,15 +1230,12 @@
 
       row.appendChild(icon); row.appendChild(info); row.appendChild(del);
       
-      // INSTANT PLAY LOGIC
       row.addEventListener('click', function () { 
-        doToggleHistory(); // Close history panel
-        setScreen(true); // Ensure screen is ON
-        
-        // Delay slightly to let UI update
+        doToggleHistory();
+        setScreen(true);
         setTimeout(function() {
           withPlayerApi(function () { 
-            createPlayer(item.id, 0, true); // Force auto-play
+            createPlayer(item.id, 0, true); 
           }); 
         }, 100);
       });
@@ -1251,6 +1245,32 @@
       });
       historyList.appendChild(row);
     });
+  }
+
+  function findHistoryIndex(id) {
+    if (!historyCache.length) return -1;
+    for (var i = 0; i < historyCache.length; i++) {
+      if (historyCache[i].id === id) return i;
+    }
+    return -1;
+  }
+
+  function playNext() {
+    if (!historyCache.length) return;
+    var idx = findHistoryIndex(currentVideoId);
+    if (idx === -1) idx = 0; // If current video not in history, start from top
+    var nextIdx = (idx + 1) % historyCache.length; // Loop back to start
+    setScreen(true);
+    createPlayer(historyCache[nextIdx].id, 0, true);
+  }
+
+  function playPrev() {
+    if (!historyCache.length) return;
+    var idx = findHistoryIndex(currentVideoId);
+    if (idx === -1) idx = 0;
+    var prevIdx = (idx - 1 + historyCache.length) % historyCache.length; // Loop to end
+    setScreen(true);
+    createPlayer(historyCache[prevIdx].id, 0, true);
   }
 
   function refreshAgoLabels() {
@@ -1326,11 +1346,17 @@
               });
             }
           } else if (e.data === YT.PlayerState.PAUSED ||
-                     e.data === YT.PlayerState.ENDED  ||
                      e.data === YT.PlayerState.UNSTARTED) {
             isPlaying = false;
             playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
             refreshTitle();
+          } else if (e.data === YT.PlayerState.ENDED) {
+            isPlaying = false;
+            playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+            // AUTO PLAY NEXT
+            setTimeout(function() {
+              playNext();
+            }, 800); // Slight delay for smooth transition
           } else {
             refreshTitle();
           }
@@ -1358,9 +1384,7 @@
     var id = extractVideoId(raw);
     if (!id) { alert('Please paste a valid YouTube link or an 11-character video ID.'); return; }
     
-    // Hide search container after successful load to keep UI clean
     searchContainer.classList.add('hidden-search');
-    
     withPlayerApi(function () { createPlayer(id, 0, false); });
   }
 
@@ -1442,11 +1466,13 @@
   });
 
   playBtn.addEventListener('click', doTogglePlay);
+  prevBtn.addEventListener('click', playPrev);
+  nextBtn.addEventListener('click', playNext);
+  
   saveBtn.addEventListener('click', doSave);
   historyBtn.addEventListener('click', doToggleHistory);
   toggleBtn.addEventListener('click', function () { setScreen(!screenOn); });
   
-  // Toggle Search Field
   toggleSearchBtn.addEventListener('click', function () {
     searchContainer.classList.toggle('hidden-search');
     if (!searchContainer.classList.contains('hidden-search')) {
@@ -1454,7 +1480,6 @@
     }
   });
 
-  // Toggle More Options (Save & Themes)
   toggleMoreBtn.addEventListener('click', function () {
     saveBtn.classList.toggle('hidden-btn');
     settingsBtn.classList.toggle('hidden-btn');
@@ -1514,7 +1539,6 @@
     if (THEMES.indexOf(savedTheme) < 0) savedTheme = 'galaxy';
     setTheme(savedTheme);
 
-    // Load from Worker (or LocalStorage fallback)
     Promise.all([apiGetHistory(), apiGetSaved()]).then(function (res) {
       historyCache = Array.isArray(res[0]) ? res[0] : [];
       savedCache = res[1] || null;
