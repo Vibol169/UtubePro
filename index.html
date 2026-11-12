@@ -760,8 +760,16 @@
   'use strict';
 
   var HISTORY_LIMIT = 40;
-  var HAS_SERVER = (typeof google !== 'undefined' && google.script && google.script.run);
   var THEMES = ['galaxy', 'aurora', 'ember', 'photo-1', 'photo-2', 'photo-3'];
+
+  /* ============================================================
+     CLOUDFLARE WORKER CONFIGURATION
+     ============================================================ */
+  // PASTE YOUR CLOUDFLARE WORKER URL HERE
+  var WORKER_URL = "https://YOUR_WORKER_SUBDOMAIN.workers.dev"; 
+  
+  // Check if we have a valid worker URL to connect to
+  var HAS_SERVER = (WORKER_URL && !WORKER_URL.includes("YOUR_WORKER_SUBDOMAIN"));
 
   /* ---------------- state ---------------- */
   var player = null;
@@ -846,12 +854,25 @@
   var LS_THEME   = 'galaxy_yt_theme_v1';
   var LS_PHOTOS  = 'galaxy_yt_photos_v1';
 
-  /* ---------------- server wrapper (Restored) ---------------- */
+  /* ---------------- Cloudflare Worker API Wrapper ---------------- */
   function serverCall(fnName, args) {
     return new Promise(function (resolve, reject) {
-      if (!HAS_SERVER) { reject(new Error('No server')); return; }
-      var runner = google.script.run.withSuccessHandler(resolve).withFailureHandler(reject);
-      runner[fnName].apply(runner, args || []);
+      if (!HAS_SERVER) { reject(new Error('Worker URL not configured')); return; }
+
+      fetch(WORKER_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: fnName, args: args || [] })
+      })
+      .then(response => {
+        if (!response.ok) throw new Error("Network response was not ok");
+        return response.json();
+      })
+      .then(data => {
+        if (data && data.error) reject(new Error(data.error));
+        else resolve(data);
+      })
+      .catch(reject);
     });
   }
 
@@ -1480,7 +1501,7 @@
     if (THEMES.indexOf(savedTheme) < 0) savedTheme = 'galaxy';
     setTheme(savedTheme);
 
-    // Load from Server (or LocalStorage fallback)
+    // Load from Worker (or LocalStorage fallback)
     Promise.all([apiGetHistory(), apiGetSaved()]).then(function (res) {
       historyCache = Array.isArray(res[0]) ? res[0] : [];
       savedCache = res[1] || null;
